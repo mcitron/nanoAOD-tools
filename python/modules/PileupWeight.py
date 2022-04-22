@@ -44,6 +44,7 @@ class PileupWeight(Module):
 
             self.mcHistPerProcess = {}
             fMC = ROOT.TFile(self.mcFile)
+	    print (fMC)
             if not fMC:
                 print "ERROR: Cannot find pileup file: ",self.mcFile
                 sys.exit(1)

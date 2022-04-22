@@ -328,15 +328,15 @@ def jetSelectionSequence(jetDict):
         ])
         
     
-        if isMC:
-            sequence.append(
-                JetTruthFlags(
-                    inputCollection=lambda event, systName=systName: getattr(event, "selectedJets_"+systName),
-                    originVariables = ['displacement_xy'],
-                    outputName="selectedJets_"+systName,
-                    globalOptions=globalOptions
-                )
-            )
+        # if isMC:
+        #     sequence.append(
+        #         JetTruthFlags(
+        #             inputCollection=lambda event, systName=systName: getattr(event, "selectedJets_"+systName),
+        #             originVariables = ['displacement_xy'],
+        #             outputName="selectedJets_"+systName,
+        #             globalOptions=globalOptions
+        #         )
+        #     )
     
     systNames = jetDict.keys()
     sequence.append(
@@ -541,13 +541,13 @@ if isMC:
         ])
     )
     
-    analyzerChain.append(
-        PileupWeight(
-            outputName="puweight",
-            processName=puProcessName,
-            globalOptions=globalOptions
-        )
-    )
+    # analyzerChain.append(
+    #     PileupWeight(
+    #         outputName="puweight",
+    #         processName=puProcessName,
+    #         globalOptions=globalOptions
+    #     )
+    # )
 
 
 else:
@@ -613,12 +613,12 @@ if not globalOptions["isData"]:
                            event: tree.fillBranch("genweight",
                            event.Generator_weight)])
 
-    analyzerChain.append(
-        ScaleUncertainty(
-            xsecs = json.load(open('/vols/cms/LLP/gridpackLookupTable.json')),
-            isSignal = isSignal
-        )
-    )
+    # analyzerChain.append(
+    #     ScaleUncertainty(
+    #         xsecs = json.load(open('/vols/cms/LLP/gridpackLookupTable.json')),
+    #         isSignal = isSignal
+    #     )
+    # )
     
 
     if isSignal:

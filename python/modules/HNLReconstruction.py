@@ -76,9 +76,9 @@ class HNLReconstruction(Module):
             
             #number of jets in event that are LLP but are not selected
             self.out.branch(self.outputName+"_nTrueMissed", "I")
-        if not self.globalOptions["isData"]:
-            for jetClass in self.jetClasses:
-                self.out.branch("hnlJet_"+self.outputName+"_"+jetClass, "I")
+        # if not self.globalOptions["isData"]:
+        #     for jetClass in self.jetClasses:
+        #         self.out.branch("hnlJet_"+self.outputName+"_"+jetClass, "I")
 
 
     def fillTruthInfo(self,hnlJet,otherJets):
@@ -154,9 +154,9 @@ class HNLReconstruction(Module):
                 if self.globalOptions["isSignal"]:
                     self.fillTruthInfo(hnlJet,sortedJets[1:])
 
-                if not self.globalOptions["isData"]:
-                    for jetClass in self.jetClasses:
-                        self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, getattr(hnlJet, jetClass))  
+                # if not self.globalOptions["isData"]:
+                #     for jetClass in self.jetClasses:
+                #         self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, getattr(hnlJet, jetClass))  
   
             else:
                 self.fillHNLJetInfo(None)
@@ -172,9 +172,9 @@ class HNLReconstruction(Module):
                     self.fillTruthInfo(None,[])
 
                           
-                if not self.globalOptions["isData"]:
-                    for jetClass in self.jetClasses:
-                        self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, -1)  
+                # if not self.globalOptions["isData"]:
+                #     for jetClass in self.jetClasses:
+                #         self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, -1)  
         else:
             if len(jets) > 0:
                 #take jet closest to l2
@@ -192,9 +192,9 @@ class HNLReconstruction(Module):
                 if self.globalOptions["isSignal"]:
                     self.fillTruthInfo(hnlJet,sortedJets[1:])
                           
-                if not self.globalOptions["isData"]:
-                    for jetClass in self.jetClasses:
-                        self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, getattr(hnlJet, jetClass))  
+                # if not self.globalOptions["isData"]:
+                #     for jetClass in self.jetClasses:
+                #         self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, getattr(hnlJet, jetClass))  
                     
             else:
                 self.fillHNLJetInfo(None)
@@ -209,8 +209,8 @@ class HNLReconstruction(Module):
                 if self.globalOptions["isSignal"]:
                     self.fillTruthInfo(None,[])
             
-                if not self.globalOptions["isData"]:
-                    for jetClass in self.jetClasses:
-                        self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, -1)  
+                # if not self.globalOptions["isData"]:
+                #     for jetClass in self.jetClasses:
+                #         self.out.fillBranch("hnlJet_"+self.outputName+"_"+jetClass, -1)  
         
         return True
