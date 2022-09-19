@@ -129,6 +129,11 @@ class MuonSelection(Module):
                     "scale_factors_2016"
                 )
 
+                self.recoSFHist = getHist(
+                    "PhysicsTools/NanoAODTools/data/muon/2016/rootfiles/scale_factor2D_absdxy_pt_TnP_reco_2016.root",
+                    "scale_factors_2016"
+                )
+
             elif self.globalOptions["year"] == 2017:
                 #tight id efficiency
                 self.idTightSFHist = getHist(
@@ -159,6 +164,11 @@ class MuonSelection(Module):
                 # )
                 self.isoLooseLooseSFHist = getHist(
                     "PhysicsTools/NanoAODTools/data/muon/2017/rootfiles/scale_factor2D_absdxy_sig_pt_TnP_2017.root",
+                    "scale_factors_2017"
+                )
+
+                self.recoSFHist = getHist(
+                    "PhysicsTools/NanoAODTools/data/muon/2017/rootfiles/scale_factor2D_absdxy_pt_TnP_reco_2017.root",
                     "scale_factors_2017"
                 )
 
@@ -193,6 +203,11 @@ class MuonSelection(Module):
                 # )
                 self.isoLooseLooseSFHist = getHist(
                     "PhysicsTools/NanoAODTools/data/muon/2018/rootfiles/scale_factor2D_absdxy_sig_pt_TnP_2018.root",
+                    "scale_factors_2018"
+                )
+
+                self.recoSFHist = getHist(
+                    "PhysicsTools/NanoAODTools/data/muon/2018/rootfiles/scale_factor2D_absdxy_pt_TnP_reco_2018.root",
                     "scale_factors_2018"
                 )
 
@@ -273,6 +288,10 @@ class MuonSelection(Module):
             self.out.branch(self.outputName+"_weight_iso_nominal","F")
             self.out.branch(self.outputName+"_weight_iso_up","F")
             self.out.branch(self.outputName+"_weight_iso_down","F")
+
+            self.out.branch(self.outputName+"_weight_reco_nominal","F")
+            self.out.branch(self.outputName+"_weight_reco_up","F")
+            self.out.branch(self.outputName+"_weight_reco_down","F")
         
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -286,6 +305,7 @@ class MuonSelection(Module):
         
         #https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Tight_Muon
         for muon in muons:
+            muon.genPartFlav = -999
             if muon.pt>self.muonMinPt and math.fabs(muon.eta)<self.muonMaxEta and self.muonId(muon) and self.muonIso(muon):
                 if self.muonMaxDxy > 0. and abs(muon.dxy) > self.muonMaxDxy:
                     unselectedMuons.append(muon)
@@ -310,6 +330,10 @@ class MuonSelection(Module):
             weight_iso_up = []
             weight_iso_down = []
 
+            weight_reco_nominal = []
+            weight_reco_up = []
+            weight_reco_down = []
+
             for muon in selectedMuons:
                 if self.globalOptions["year"] == 2016:
                     weight_id,weight_id_err = getSFXY(self.muonIdSF,muon.eta,muon.pt)
@@ -333,6 +357,14 @@ class MuonSelection(Module):
                 weight_iso_up.append((weight_iso+weight_iso_err))
                 weight_iso_down.append((weight_iso-weight_iso_err))
 
+                weight_reco,weight_reco_err = getSFXY(self.recoSFHist,abs(muon.dxy),muon.pt)
+                if weight_reco < 0.8:
+                    print(muon.pt, abs(muon.dxy), weight_reco)
+
+                weight_reco_nominal.append(weight_reco)
+                weight_reco_up.append((weight_reco+weight_reco_err))
+                weight_reco_down.append((weight_reco-weight_reco_err)) 
+
             weight_id_nominal = np.prod(np.array(weight_id_nominal))
             weight_id_up = np.prod(np.array(weight_id_up))
             weight_id_down = np.prod(np.array(weight_id_down))
@@ -341,6 +373,10 @@ class MuonSelection(Module):
             weight_iso_up = np.prod(np.array(weight_iso_up))
             weight_iso_down = np.prod(np.array(weight_iso_down))
 
+            weight_reco_nominal = np.prod(np.array(weight_reco_nominal))
+            weight_reco_up = np.prod(np.array(weight_reco_up))
+            weight_reco_down = np.prod(np.array(weight_reco_down))
+
             self.out.fillBranch(self.outputName+"_weight_id_nominal", weight_id_nominal)
             self.out.fillBranch(self.outputName+"_weight_id_up", weight_id_up)
             self.out.fillBranch(self.outputName+"_weight_id_down", weight_id_down)
@@ -348,6 +384,10 @@ class MuonSelection(Module):
             self.out.fillBranch(self.outputName+"_weight_iso_nominal", weight_iso_nominal)
             self.out.fillBranch(self.outputName+"_weight_iso_up", weight_iso_up)
             self.out.fillBranch(self.outputName+"_weight_iso_down", weight_iso_down)
+
+            self.out.fillBranch(self.outputName+"_weight_reco_nominal", weight_reco_nominal)
+            self.out.fillBranch(self.outputName+"_weight_reco_up", weight_reco_up)
+            self.out.fillBranch(self.outputName+"_weight_reco_down", weight_reco_down)
 
         self.out.fillBranch("n"+self.outputName,len(selectedMuons))
         for variable in self.storeKinematics:
