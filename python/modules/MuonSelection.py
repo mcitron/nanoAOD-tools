@@ -358,8 +358,6 @@ class MuonSelection(Module):
                 weight_iso_down.append((weight_iso-weight_iso_err))
 
                 weight_reco,weight_reco_err = getSFXY(self.recoSFHist,abs(muon.dxy),muon.pt)
-                if weight_reco < 0.8:
-                    print(muon.pt, abs(muon.dxy), weight_reco)
 
                 weight_reco_nominal.append(weight_reco)
                 weight_reco_up.append((weight_reco+weight_reco_err))
