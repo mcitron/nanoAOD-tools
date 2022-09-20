@@ -94,13 +94,19 @@ met_variable = {2016: lambda event: Object(event, "MET"),
                 2018: lambda event: Object(event, "MET")
                 }
 
+if isMC:
+    extra_var = ["genPartFlav"]
+else:
+    extra_var = []
+
+
 
 leptonSelection = [
     MuonSelection(
         outputName="tightMuons",
         storeKinematics=[],
         storeWeights=True,
-        muonMinPt=minMuonPt[globalOptions["year"]],
+        muonMinPt=10,#minMuonPt[globalOptions["year"]],
         muonMaxDxy=0.01,
         muonMaxDz=0.05,
         muonID=MuonSelection.TIGHT,
@@ -110,7 +116,7 @@ leptonSelection = [
     ElectronSelection(
         outputName="tightElectrons",
         storeKinematics=[],
-        electronMinPt=minElectronPt[globalOptions["year"]],
+        electronMinPt=10,#minElectronPt[globalOptions["year"]],
         electronID="noIso_WP90" if args.noiso else "Iso_WP90",
         storeWeights=True,
         electronIPCuts=True,
@@ -178,8 +184,11 @@ leptonSelection = [
         outputName = "Leptons",
         storeLeadingKinematics=["pt", "eta", "phi", "charge/I", "isMuon/I", "isElectron/I", "relIso", "dxy", "dz", 'dxysig', 'dzsig'],
         storeSubleadingKinematics=["pt", "eta", "phi", "charge/I", "isMuon/I", "isElectron/I", "relIso", "dxy", "dz", 'dxysig', 'dzsig'],
-        storeTrailingKinematics=["pt", "eta", "phi", "charge/I", "isMuon/I", "isElectron/I", "relIso", "dxy", "dz", 'dxysig', 'dzsig', 'isCustomID', 'isCustomNoConvID']
+        storeTrailingKinematics=["pt", "eta", "phi", "charge/I", "isMuon/I", "isElectron/I", "relIso", "dxy", "dz", 'dxysig', 'dzsig', 'looseId', 'tightId', 'isCustomID', 'isCustomNoConvID', 'isLooseNoConvID']+extra_var#"genPartFlav" only exists for electrons!!!
     ),
+    # GenLevelForEleSF(
+    #     leptonCollection=lambda event:event.trailingLeptons
+    # ),
 ]
 
 analyzerChain = []

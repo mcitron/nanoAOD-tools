@@ -52,7 +52,7 @@ class PhotonConversionsForEleSF(Module):
         globalOptions={"isData": False, "year": 2016},
         storeLeadingKinematics=["pt", "eta", "phi", "charge", "isMuon", "isElectron", "relIso", "dxy", "dz", 'dxysig', 'dzsig', 'isTriggerMatched'],
         storeSubleadingKinematics=["pt", "eta", "phi", "charge", "isMuon", "isElectron", "relIso", "dxy", "dz", 'dxysig', 'dzsig', 'isTriggerMatched'],
-        storeTrailingKinematics=["pt", "eta", "phi", "charge/I", "isMuon/I", "isElectron/I", "relIso", "dxy", "dz", 'dxysig', 'dzsig', 'looseId', 'tightId', 'isCustomID', 'isCustomNoConvID']
+        storeTrailingKinematics=["pt", "eta", "phi", "charge/I", "isMuon/I", "isElectron/I", "relIso", "dxy", "dz", 'dxysig', 'dzsig', 'looseId', 'tightId', 'isCustomID', 'isCustomNoConvID', 'isLooseNoConvID', 'genPartFlav']
     ):
 
         self.globalOptions = globalOptions

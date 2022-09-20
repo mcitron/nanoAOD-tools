@@ -40,6 +40,21 @@ def CustomIsoID(electron):
     else:
         return False       
 
+
+def LooseNoConvID(electron):
+    if electron.MinPtCut >1 and \
+        electron.GsfEleSCEtaMultiRangeCut>1 and \
+        electron.GsfEleDEtaInSeedCut>1 and \
+        electron.GsfEleDPhiInCut>1 and \
+        electron.GsfEleFull5x5SigmaIEtaIEtaCut>1 and \
+        electron.GsfEleHadronicOverEMEnergyScaledCut>1 and \
+        electron.GsfEleEInverseMinusPInverseCut>1 and \
+        electron.GsfEleRelPFIsoScaledCut>1 and \
+        electron.GsfEleMissingHitsCut:
+        return True
+    else:
+        return False
+
 class ElectronSelection(Module):
     def __init__(
         self,
@@ -64,7 +79,8 @@ class ElectronSelection(Module):
                "Custom",
                "CustomIso",
                "Iso",
-               "CustomNoConv"
+               "CustomNoConv",
+               "LooseNoConvID",
                "Inv"
               ]
         self.inputCollection = inputCollection
@@ -96,6 +112,9 @@ class ElectronSelection(Module):
         elif electronID == "CustomNoConv":
             self.storeWeights = False
             self.electronID = lambda electron:  CustomNoConvID(electron)
+        elif electronID == "LooseNoConv":
+            self.storeWeights = False
+            self.electronID = lambda electron:  LooseNoConvID(electron)
         elif electronID == "Inv":
             self.electronID = lambda electron: electron.mvaFall17V2Iso_WPL<1 and electron.pfRelIso03_all<0.8
             self.storeWeights = False
@@ -126,9 +145,14 @@ class ElectronSelection(Module):
                 )
             elif self.electronIDName == "Custom":
                 self.idHist = getHist(
-                    "PhysicsTools/NanoAODTools/data/electron/{}/{}".format(globalOptions["year"], "scale_factor2D_trailingLeptons_dxysig_trailingLeptons_pt_"+str(globalOptions["year"])+".root"),
-                    "scale_factor2D_trailingLeptons_dxysig_trailingLeptons_pt_"+str(globalOptions["year"])
+                    "PhysicsTools/NanoAODTools/data/electron/{}/{}".format(globalOptions["year"], "scale_factor2D_geom_trailingLeptons_dxysig_trailingLeptons_pt_"+str(globalOptions["year"])+"_CustomID_syst.root"),
+                    "scale_factor2D_geom_trailingLeptons_dxysig_trailingLeptons_pt_"+str(globalOptions["year"])+"_CustomID"
                 )
+            # elif self.electronIDName == "Custom":
+            #     self.idHist = getHist(
+            #         "PhysicsTools/NanoAODTools/data/electron/{}".format("scale_factor2D_trailingLeptons_dxysig_trailingLeptons_pt_Run-2.root"),
+            #         "scale_factor2D_trailingLeptons_dxysig_trailingLeptons_pt_Run-2"
+            #     )
         if not self.globalOptions["isData"]:
             if self.globalOptions["year"] == 2016:
                 self.reco_hist_low = getHist(
@@ -205,6 +229,11 @@ class ElectronSelection(Module):
             for i in range(10):
                 cuts[i] = (bitmap >> i*3) & 0x7
 
+            electron.vetoId=electron.cutBased > 0
+            electron.looseId=electron.cutBased > 1
+            electron.mediumId=electron.cutBased> 2
+            electron.tightId=electron.cutBased> 3
+
             electron.MinPtCut = cuts[0]
             electron.GsfEleSCEtaMultiRangeCut = cuts[1]
             electron.GsfEleDEtaInSeedCut = cuts[2]
@@ -225,6 +254,11 @@ class ElectronSelection(Module):
                 setattr(electron, "isCustomNoConvID", 1)
             else:
                 setattr(electron, "isCustomNoConvID", 0)
+
+            if LooseNoConvID(electron):
+                setattr(electron, "isLooseNoConvID", 1)
+            else:
+                setattr(electron, "isLooseNoConvID", 0)
 
             if electron.pt>self.electronMinPt and math.fabs(electron.eta)<self.electronMaxEta \
                 and self.electronID(electron):
